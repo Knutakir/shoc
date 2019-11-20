@@ -776,7 +776,7 @@ sub buildCommand {
    # Parallel; start with mpirun and maybe a hostfile
    if ($numTasks > 1)
    {
-       $command .= "mpirun -np $numTasks ";
+       $command .= "mpirun -np $numTasks --allow-run-as-root ";
        $command .= "-hostfile $hostfile " if ($hostfile ne "");
    }
 
@@ -825,6 +825,7 @@ sub printDevInfo {
    if ($hostfile eq "") {
     $hostfileString = "";
    } else {
+    # If one needs to run this as root aswell, add `--allow-run-as-root`
     $hostfileString = "mpirun -np 1 -hostfile $hostfile ";
    }
 
