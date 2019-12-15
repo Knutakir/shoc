@@ -42,7 +42,13 @@ libspec=`$NVCC -dryrun bogus.cu 2>&1 | grep LIBRARIES | sed 's/^.*LIBRARIES=//'`
 #echo "libspec=$libspec"
 if [ $cudart_flag_supported -eq 1 ]
 then
-    cudalibs=`$NVCC -dryrun bogus.cu 2>&1 | tail -1 | sed "s#^.*-o \"a.out\"##" | sed 's#"[a-zA-Z0-9/_-]*\.o"##g' | sed 's/-Wl,--start-group//' | sed 's/-Wl,--end-group//'`
+    # Check if the CUDA version is 10.2
+    # If it is, run the newer command. This is due to the "-o a.out" being at the end of the output
+    if cat /usr/local/cuda/version.txt | cut -d ' ' -f3 | grep -q '10.2'; then
+        cudalibs=`$NVCC -dryrun bogus.cu 2>&1 | tail -1 | sed 's/[^.*]*\(-Wl.*\)/\1/' | sed 's#"[a-zA-Z0-9/_-]*\.o"##g' | sed 's/-Wl,--start-group//' | sed 's/-Wl,--end-group -o "a.out"//'`
+    else
+        cudalibs=`$NVCC -dryrun bogus.cu 2>&1 | tail -1 | sed "s#^.*-o \"a.out\"##" | sed 's#"[a-zA-Z0-9/_-]*\.o"##g' | sed 's/-Wl,--start-group//' | sed 's/-Wl,--end-group//'`
+    fi
 else
     cudalibs=$libspec
 fi
