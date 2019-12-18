@@ -17,5 +17,5 @@ RUN make clean
 RUN make
 RUN make install
 
-# Example command to run benchmark on two GPUs with size 1
-CMD perl ./tools/driver.pl -s 1 -cuda -d 14,15
+# Example command to run benchmark on two GPUs with size 4
+CMD perl ./tools/driver.pl -s 4 -cuda -d 14,15
